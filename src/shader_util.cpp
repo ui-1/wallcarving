@@ -1,7 +1,3 @@
-/**
- * MTAT.03.015 Computer Graphics.
- * Shader configuration utility routines.
- */
 #include "shader_util.h"
 #include <stdexcept>
 #include <cerrno>
@@ -13,10 +9,6 @@
 #include <stdlib.h>
 using std::strcpy;
 
-// -------- Utility functions --------------
-/**
- * Reads file contents into a string.
- */
 std::string get_file_contents(const char *filename) {
     std::ifstream in(filename, std::ios::in | std::ios::binary);
     if (in) return std::string((std::istreambuf_iterator<char>(in)),
@@ -24,13 +16,9 @@ std::string get_file_contents(const char *filename) {
     else throw(std::runtime_error(std::string("Failed to read file ") + filename));
 }
 
-/**
- * Allocates and compiles given shader in OpenGL
- */
 GLuint compile(GLuint type, std::string source) {
     GLuint shader = glCreateShader(type);
 
-    // Split the code into separate lines (then the compilation error messages are more informative)
     std::vector<GLchar *> lines;
     std::string line;
     std::istringstream ss(source);
@@ -41,7 +29,6 @@ GLuint compile(GLuint type, std::string source) {
         lines.push_back(c_line);
     }
 
-    // Compile the source
     glShaderSource(shader, lines.size(), (const GLchar**)&lines[0], NULL);
     glCompileShader(shader);
     for (unsigned int i = 0; i < lines.size(); i++) free(lines[i]);
@@ -60,9 +47,6 @@ GLuint compile(GLuint type, std::string source) {
     return shader;
 }
 
-/**
- * Default shaders.
- */
 const GLchar *default_vertex_shader =
     "#version 120\n"
     "varying vec4 vertex_color\n;"
@@ -71,7 +55,7 @@ const GLchar *default_vertex_shader =
     "    vertex_color = gl_Color;\n"
     "}";
 
-const GLchar *default_fragment_shader = // Only supports coloring. Textures require custom stuff.
+const GLchar *default_fragment_shader = 
     "#version 120\n"
     "varying vec4 vertex_color;\n"
     "void main() {\n"
