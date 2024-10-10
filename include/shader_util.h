@@ -2,6 +2,7 @@
  * MTAT.03.015 Computer Graphics.
  * Shader configuration utility routines.
  */
+#pragma once
 #include <string>
 #include <GL/glew.h>
 #include "glm/glm.hpp"
