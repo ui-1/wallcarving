@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
+#include "userInput.h"
 #include "floor.h"
 #include "shader_util.h"
 
@@ -24,12 +25,13 @@ int main(int argc, char *argv[]) {
         exit (EXIT_FAILURE);
     }
 
-    win = glfwCreateWindow(640, 480, "evil gnome hits wall with pickaxe", NULL, NULL);
+    win = glfwCreateWindow(1920, 1080, "evil gnome hits wall with pickaxe", NULL, NULL);
 
     if (!win) {
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
+    glfwSetCursorPosCallback(win, mouse_position_callback);
 
     glfwMakeContextCurrent(win);
     glewExperimental = GL_TRUE;
@@ -47,9 +49,9 @@ int main(int argc, char *argv[]) {
     shader.use();
 
     glm::mat4 projection = glm::perspective(glm::radians(80.0f), 4.0f / 3.0f, 0.1f, 100.f);
-    glm::mat4 view = glm::lookAt(glm::vec3(0.0, 6.0, 15.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+
     shader.uniformMatrix4fv("projectionMatrix", projection);
-    shader.uniformMatrix4fv("viewMatrix", view);
+
 
     GLuint floorVAO = initWalls(shader);
 
@@ -60,6 +62,14 @@ int main(int argc, char *argv[]) {
 
     while (!glfwWindowShouldClose(win)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+    // Update the view matrix each frame
+        glm::vec3 target = cameraPos + front; // Calculate target position based on current camera position and front vector
+        glm::mat4 view = glm::lookAt(cameraPos, target, glm::vec3(0.0f, 1.0f, 0.0f));
+        shader.uniformMatrix4fv("viewMatrix", view); // Send updated view matrix to shader
+
+
         drawFloor(floorVAO, shader);
         glfwSwapBuffers(win);
         glfwPollEvents();
