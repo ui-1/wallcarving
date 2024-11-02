@@ -32,6 +32,10 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
     glfwSetCursorPosCallback(win, mouse_position_callback);
+    glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_HIDDEN); //hide cursor
+
+    //for movement
+    glfwSetKeyCallback(win, key_callback);
 
     glfwMakeContextCurrent(win);
     glewExperimental = GL_TRUE;
@@ -60,21 +64,35 @@ int main(int argc, char *argv[]) {
     glCullFace(GL_BACK);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-    while (!glfwWindowShouldClose(win)) {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+while (!glfwWindowShouldClose(win)) {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // Continuous camera movement based on key states
+    if (moveForward) {
+        cameraPos += cameraSpeed * front; // Move forward
+    }
+    if (moveBackward) {
+        cameraPos -= cameraSpeed * front; // Move backward
+    }
+    if (moveLeft) {
+        cameraPos -= glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f))) * cameraSpeed; // Move left
+    }
+    if (moveRight) {
+        cameraPos += glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f))) * cameraSpeed; // Move right
+    }
 
     // Update the view matrix each frame
-        glm::vec3 target = cameraPos + front; // Calculate target position based on current camera position and front vector
-        glm::mat4 view = glm::lookAt(cameraPos, target, glm::vec3(0.0f, 1.0f, 0.0f));
-        shader.uniformMatrix4fv("viewMatrix", view); // Send updated view matrix to shader
+    glm::vec3 target = cameraPos + front; // Calculate target position based on current camera position and front vector
+    glm::mat4 view = glm::lookAt(cameraPos, target, glm::vec3(0.0f, 1.0f, 0.0f));
+    shader.uniformMatrix4fv("viewMatrix", view);
 
+    drawFloor(floorVAO, shader);
 
-        drawFloor(floorVAO, shader);
-        glfwSwapBuffers(win);
-        glfwPollEvents();
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-    }
+    glfwSwapBuffers(win);
+    glfwPollEvents();
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+}
+
 
     glfwTerminate();
     exit(EXIT_SUCCESS);
