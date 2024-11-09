@@ -17,6 +17,7 @@ class shader_prog {
 private:
     GLuint vertex_shader, fragment_shader, prog;
     std::string v_source, f_source;
+    std::string v_filename, f_filename;
 public:
     shader_prog(const char* vertex_shader_filename, const char* fragment_shader_filename);
     void use();
@@ -30,4 +31,6 @@ public:
     void uniformMatrix4fv(const char* name, const float* matrix);
     void uniformMatrix4fv(const char* name, glm::mat4 matrix);
     void attribute3fv(const char* name, GLfloat* vecArray, int numberOfVertices);
+    std::string getVfilename();
+    std::string getFfilename();
 };

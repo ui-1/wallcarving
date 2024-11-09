@@ -65,6 +65,8 @@ const GLchar *default_fragment_shader =
 shader_prog::shader_prog(const char* vertex_shader_filename, const char* fragment_shader_filename) {
     v_source = vertex_shader_filename == NULL ? std::string((const char*)default_vertex_shader) : get_file_contents(vertex_shader_filename);
     f_source = fragment_shader_filename == NULL ? std::string((const char*)default_fragment_shader) : get_file_contents(fragment_shader_filename);
+    v_filename = vertex_shader_filename;
+    f_filename = fragment_shader_filename;
 }
 
 void shader_prog::use() {
@@ -133,4 +135,12 @@ void shader_prog::attribute3fv(const char* name, GLfloat* vecArray, int numberOf
         0,                 // no extra data between each position
         0                  // offset of first element
     );
+}
+
+std::string shader_prog::getVfilename() {
+    return v_filename;
+}
+
+std::string shader_prog::getFfilename() {
+    return f_filename;
 }
