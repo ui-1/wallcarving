@@ -6,7 +6,7 @@
 #include "userInput.h"             
 #include <iostream> 
 
-glm::vec3 cameraPos = glm::vec3(0.0f, 6.0f, 15.0f); // Initialize camera position
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f); // Initialize camera position
 glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f); // Initial front direction
 
 // Define movement variables
@@ -40,7 +40,7 @@ void mouse_position_callback(GLFWwindow* window, double xpos, double ypos) {
 
     yaw += xOffset;
     pitch += yOffset;
-    printf("The number is: %f\n", yaw);
+    //printf("The number is: %f\n", yaw);
 
     // so that cam cant get flipped upside down
     if (pitch > 89.0f) pitch = 89.0f;
