@@ -1,3 +1,4 @@
+#include <iostream>
 #include <stdlib.h>
 #include <stack>
 #include <thread>
@@ -9,6 +10,7 @@
 #include "userInput.h"
 #include "floor.h"
 #include "shader_util.h"
+#include "wall.h"
 
 #define CONCAT_PATHS(A, B) A "/" B
 #define ADD_ROOT(B) CONCAT_PATHS(TASK_ROOT_PATH, B)
@@ -56,42 +58,75 @@ int main(int argc, char *argv[]) {
 
     shader.uniformMatrix4fv("projectionMatrix", projection);
 
-
     GLuint floorVAO = initWalls(shader);
+    WallMatrix* wm = new WallMatrix(shader);
+
+
+
+    // --------------------------------------------------------------
+    //             (see wall.h for available methods)
+
+    // example of adding a new vertex
+    int i = wm->addVertex(glm::vec3(1.0f, 0.0f, 0.0f));
+
+
+    // iterate over existing vertices
+    std::vector<glm::vec3> verts = wm->getVertices();
+    for (glm::vec3 v : verts) {
+        // stuff
+    }
+
+    // add two edges connected to the new vertex
+    wm->setEdge(1, i, true);
+    wm->setEdge(2, i, true);
+
+    // move the vertex
+    wm->setVertex(glm::vec3(0.8f, 0.3f, -0.2f), i);
+
+    //remove the vertex
+    wm->removeVertex(i);
+
+    // print debug information
+    wm->debugPrint();
+
+    // --------------------------------------------------------------
+
+
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-while (!glfwWindowShouldClose(win)) {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    while (!glfwWindowShouldClose(win)) {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Continuous camera movement based on key states
-    if (moveForward) {
-        cameraPos += cameraSpeed * front; // Move forward
-    }
-    if (moveBackward) {
-        cameraPos -= cameraSpeed * front; // Move backward
-    }
-    if (moveLeft) {
-        cameraPos -= glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f))) * cameraSpeed; // Move left
-    }
-    if (moveRight) {
-        cameraPos += glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f))) * cameraSpeed; // Move right
-    }
+        // Continuous camera movement based on key states
+        if (moveForward) {
+            cameraPos += cameraSpeed * front; // Move forward
+        }
+        if (moveBackward) {
+            cameraPos -= cameraSpeed * front; // Move backward
+        }
+        if (moveLeft) {
+            cameraPos -= glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f))) * cameraSpeed; // Move left
+        }
+        if (moveRight) {
+            cameraPos += glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f))) * cameraSpeed; // Move right
+        }
 
-    // Update the view matrix each frame
-    glm::vec3 target = cameraPos + front; // Calculate target position based on current camera position and front vector
-    glm::mat4 view = glm::lookAt(cameraPos, target, glm::vec3(0.0f, 1.0f, 0.0f));
-    shader.uniformMatrix4fv("viewMatrix", view);
+        // Update the view matrix each frame
+        glm::vec3 target = cameraPos + front; // Calculate target position based on current camera position and front vector
+        glm::mat4 view = glm::lookAt(cameraPos, target, glm::vec3(0.0f, 1.0f, 0.0f));
+        shader.uniformMatrix4fv("viewMatrix", view);
+        
+        drawFloor(floorVAO, shader);
+        wm->drawWall();
 
-    drawFloor(floorVAO, shader);
-
-    glfwSwapBuffers(win);
-    glfwPollEvents();
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
-}
+        glfwSwapBuffers(win);
+        glfwPollEvents();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
 
 
     glfwTerminate();
