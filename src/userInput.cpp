@@ -4,24 +4,35 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "userInput.h"             
-#include <iostream> 
+#include "shader_util.h"
+#include <iostream>
 
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f); // Initialize camera position
+
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f); // Initial camera position
 glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f); // Initial front direction
 
-// Define movement variables
+// Movement variables
 bool moveForward = false;
 bool moveBackward = false;
 bool moveLeft = false;
 bool moveRight = false;
 float cameraSpeed = 0.1f; 
 
+//Variables for looking around
 static double lastX = 320.0;
 static double lastY = 240.0;
 static bool firstMouse = true;
 static float yaw = -90.0f;
 static float pitch = -90.0f;
 
+/*  How this works:
+*   1.Gets info from main.cpp'
+*   2.On first pass set the lastX and lastY to the default cursor pos.
+*   3.When the mouse moves, calculate the xOffset and yOffset(diff between old and new mouse movement)
+*   4.yaw and pitch(mouse rotation on x[yaw] and y[pitch])
+*   5.Clamp so you dont go around in circles when looking up
+*   6.Change the front vector based on
+*/
 void mouse_position_callback(GLFWwindow* window, double xpos, double ypos) {
     if (firstMouse) {
         lastX = xpos;
@@ -53,6 +64,8 @@ void mouse_position_callback(GLFWwindow* window, double xpos, double ypos) {
     front = glm::normalize(front); // Normalize to ensure consistent direction
 }
 
+
+//Movement
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (action == GLFW_PRESS) {
         switch (key) {
@@ -95,3 +108,46 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     }
 }
 
+void renderCrosshair(shader_prog crosshairShader, int windowWidth, int windowHeight) {
+    // Crosshair vertices (center of screen)
+    GLfloat crosshairVertices[] = {
+        -0.02f,  0.0f,  1.0f, 0.0f, 0.0f,  // Left horizontal line (Red)
+         0.02f,  0.0f,  1.0f, 0.0f, 0.0f,  // Right horizontal line (Red)
+         0.0f,   0.02f,  1.0f, 0.0f, 0.0f,  // Top vertical line (Red)
+         0.0f,  -0.02f,  1.0f, 0.0f, 0.0f   // Bottom vertical line (Red)
+    };
+
+    // Create buffers for crosshair
+    GLuint VBO, VAO;
+    glGenBuffers(1, &VBO);
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(crosshairVertices), crosshairVertices, GL_STATIC_DRAW);
+
+    // Position attribute
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+
+    // Color attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+
+    // Unbind the VAO and VBO
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    // Use the crosshair shader program
+    crosshairShader.use();
+    //crosshairShader.uniform3f("color", 1.0f, 0.0f, 0.0f); 
+
+    // Draw the crosshair lines
+    glBindVertexArray(VAO);
+    glDrawArrays(GL_LINES, 0, 4);  // Draw 4 vertices (two lines)
+    glBindVertexArray(0);
+
+    // Optionally, clean up (delete buffers)
+    glDeleteBuffers(1, &VBO);
+    glDeleteVertexArrays(1, &VAO);
+}

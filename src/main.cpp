@@ -12,12 +12,18 @@
 #include "shader_util.h"
 #include "wall.h"
 
+
 #define CONCAT_PATHS(A, B) A "/" B
 #define ADD_ROOT(B) CONCAT_PATHS(TASK_ROOT_PATH, B)
 
 shader_prog shader(
     ADD_ROOT("shaders/chopper.vert.glsl"),
     ADD_ROOT("shaders/chopper.frag.glsl")
+);
+
+shader_prog crosshairShader(
+    ADD_ROOT("shaders/crosshair.vert.glsl"),
+    ADD_ROOT("shaders/crosshair.frag.glsl")
 );
 
 int main(int argc, char *argv[]) {
@@ -34,7 +40,7 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
     glfwSetCursorPosCallback(win, mouse_position_callback);
-    glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_HIDDEN); //hide cursor
+    glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED); //hide cursor
 
     //for movement
     glfwSetKeyCallback(win, key_callback);
@@ -60,8 +66,6 @@ int main(int argc, char *argv[]) {
 
     GLuint floorVAO = initWalls(shader);
     WallMatrix* wm = new WallMatrix(shader);
-
-
 
     // --------------------------------------------------------------
     //             (see wall.h for available methods)
@@ -93,7 +97,8 @@ int main(int argc, char *argv[]) {
 
 
 
-    glEnable(GL_DEPTH_TEST);
+    //glEnable(GL_DEPTH_TEST);
+    
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -119,10 +124,16 @@ int main(int argc, char *argv[]) {
         glm::vec3 target = cameraPos + front; // Calculate target position based on current camera position and front vector
         glm::mat4 view = glm::lookAt(cameraPos, target, glm::vec3(0.0f, 1.0f, 0.0f));
         shader.uniformMatrix4fv("viewMatrix", view);
-        
+
         drawFloor(floorVAO, shader);
         wm->drawWall();
 
+    //Crosshair currently not working(renders over 3d objects)
+    //uncomment to see tho
+        //glDisable(GL_DEPTH_TEST);
+        //renderCrosshair(crosshairShader, 1920, 1080);
+        //glEnable(GL_DEPTH_TEST);
+        
         glfwSwapBuffers(win);
         glfwPollEvents();
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
