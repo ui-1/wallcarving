@@ -6,7 +6,7 @@
 
 #include "shader_util.h"
 
-#define EM_SIZE 100
+#define EM_SIZE 1000
 
 class WallMatrix {
     public:
@@ -53,4 +53,6 @@ class WallMatrix {
         GLuint& getWallVAO();
         
         void regenerateVAO();
+
+        void initializeWall(int a, int b);
 };

@@ -18,26 +18,12 @@ WallMatrix::WallMatrix(shader_prog& shader): wallShader(shader) {
     }
 
     vertices = std::vector<glm::vec3>();
-    
     stale = false;
-
-    // Initial test wall setup
-    addVertex(glm::vec3(-1.0f,  -1.0f, 0.0f));
-    addVertex(glm::vec3( 0.0f,  -1.0f, 0.0f));
-    addVertex(glm::vec3( 0.0f,   1.0f, 0.0f));
-    addVertex(glm::vec3(-1.0f,   1.0f, 0.0f));
-
-    setEdge(0, 1, true);
-    setEdge(1, 2, true);
-    setEdge(2, 3, true);
-    setEdge(3, 0, true);
-    setEdge(0, 2, true);
-    
-    regenerateVAO();
+    initializeWall(3, 2);
 }
 
 int WallMatrix::addVertex(glm::vec3 vertex) {
-    // TODO: vertex limit
+    // TODO: handle vertex limit
     vertices.push_back(vertex);
     stale = true;
     return (int) vertices.size() - 1;
@@ -58,20 +44,13 @@ void WallMatrix::setVertex(glm::vec3 vertex, int i) {
 }
 
 void WallMatrix::setEdge(int i, int j, bool connected) {
-    if (i < j) {
-        edges[i][j] = connected;
-    } else {
-        edges[j][i] = connected;
-    }
+    edges[i][j] = connected;
+    edges[j][i] = connected;
     stale = true;
 }
 
 bool WallMatrix::getEdge(int i, int j) {
-    if (i < j) {
-        return edges[i][j];
-    } else {
-        return edges[j][i];
-    }
+    return edges[i][j];
 }
 
 const std::vector<glm::vec3>& WallMatrix::getVertices() {
@@ -187,4 +166,30 @@ void WallMatrix::debugPrint() {
     }
 
     std::cout << "\n----------------------------------------------------------\n\n";
+}
+
+void WallMatrix::initializeWall(int a, int b) {
+    for (int i_a = 0; i_a <= a; i_a++) {
+        for (int i_b = 0; i_b <= b; i_b++) {
+            addVertex(glm::vec3(i_a, i_b, 0.0f));
+        }
+    }
+
+    for (int i_a = 0; i_a <= a; i_a++) {
+        for (int i_b = 0; i_b < b; i_b++) {
+            setEdge(i_a*(b+1) + i_b, i_a*(b+1) + i_b + 1, true);
+        }
+    }
+
+    for (int i_b = 0; i_b <= b; i_b++) {
+        for (int i_a = 0; i_a < a; i_a++) {
+            setEdge(i_a*(b+1) + i_b, (i_a+1)*(b+1) + i_b, true);
+        }
+    }
+
+    for (int i_a = 1; i_a <= a; i_a++) {
+        for (int i_b = 1; i_b <= b; i_b++) {
+            setEdge(i_a*(b+1) + i_b - 1, (i_a-1)*(b+1) + i_b, true);
+        }
+    }
 }
