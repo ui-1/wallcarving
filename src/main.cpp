@@ -66,6 +66,8 @@ int main(int argc, char *argv[]) {
 
     GLuint floorVAO = initWalls(shader);
     WallMatrix* wm = new WallMatrix(shader);
+    globalWM = wm;
+    glfwSetMouseButtonCallback(win, mouse_button_callback);
 
     // --------------------------------------------------------------
     //             (see wall.h for available methods)

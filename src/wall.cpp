@@ -193,3 +193,64 @@ void WallMatrix::initializeWall(int a, int b) {
         }
     }
 }
+
+glm::vec3 WallMatrix::getClickedVertex(glm::vec3 rayOrigin, glm::vec3 rayDirection) {
+    // TODO: goes over all triangles until finding a hit; very bad!!
+    std::set<std::tuple<int, int, int>> triSet;
+    for (int i = 0; i < vertices.size(); i++) {
+        for (int j = i + 1; j < vertices.size(); j++) {
+            for (int k = j + 1; k < vertices.size(); k++) {
+                if (getEdge(i, j) && getEdge(j, k) && getEdge(k, i)) {
+                    triSet.insert(std::make_tuple(i, j, k));
+                }
+            }
+        }
+    }
+
+    for (std::tuple<int, int, int> t : triSet) {
+        std::cout << "Current triangle: " << std::get<0>(t) << " " << std::get<1>(t) << " " << std::get<2>(t) << '\n';
+    
+
+        // "Translated" from ray chopper task
+        
+        float epsilon = 0.001f;
+        
+        glm::vec3 e = vertices[std::get<2>(t)] - vertices[std::get<0>(t)];
+        glm::vec3 f = vertices[std::get<1>(t)] - vertices[std::get<0>(t)];
+        
+        glm::vec3 q = glm::cross(e, rayDirection);
+        float D = glm::dot(f, q);
+
+        if (D <= 0 + epsilon) {
+            std::cout << "Missed" << '\n';
+            continue;
+        }
+
+        glm::vec3 B = rayOrigin - vertices[std::get<0>(t)];
+        float v = glm::dot(B, q);
+
+        if (D <= v) {
+            std::cout << "Missed" << '\n';
+            continue;
+        }
+
+        glm::vec3 p = glm::cross(B, f);
+        float u = glm::dot(p, rayDirection);
+
+        if (D <= u+v) {
+            std::cout << "Missed" << '\n';
+            continue;
+        }
+
+        float t = glm::dot(e, p);
+        if (t < 0) {
+            std::cout << "Missed" << '\n';
+            continue;
+        }
+
+        return rayOrigin + rayDirection*(t/D);
+
+    }
+
+    return glm::vec3(999.0f, 999.0f, 999.0f);
+}

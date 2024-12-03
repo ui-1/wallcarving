@@ -5,11 +5,12 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "userInput.h"             
 #include "shader_util.h"
+#include "wall.h"
 #include <iostream>
-
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f); // Initial camera position
 glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f); // Initial front direction
+WallMatrix* globalWM = nullptr;
 
 // Movement variables
 bool moveForward = false;
@@ -107,6 +108,17 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         }
     }
 }
+
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        if (globalWM != nullptr) {
+            glm::vec3 clickedVertex = globalWM->getClickedVertex(cameraPos, front);
+            std::cout << "Click position: (" << clickedVertex.x << ", " << clickedVertex.y << ", " << clickedVertex.z << ")\n";
+        }
+    }
+}
+
 
 void renderCrosshair(shader_prog crosshairShader, int windowWidth, int windowHeight) {
     // Crosshair vertices (center of screen)

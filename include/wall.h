@@ -37,6 +37,8 @@ class WallMatrix {
         // Print debug information about the wall
         void debugPrint();
 
+        glm::vec3 getClickedVertex(glm::vec3 rayOrigin, glm::vec3 rayDirection);
+
     private:
         shader_prog& wallShader;
         
