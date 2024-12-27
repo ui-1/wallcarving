@@ -1,21 +1,10 @@
 // Oletan, et mul on üks struct, mis sisaldab endas mingil moel seda kolmnurkadest koosnevat pinda, mida minu tehtav funktsioon hakkab mõjutama. Veel oletan, et sellel struktuuril on meetod, mis tagastab std::vector<glm::vec3> nimekirja, mis sisaldab iga tipu koordinaate.
 #include <vector>
-#include "include/wall.h"
+#include "wall.h"
+#include "change_wall.h"
+#include "glm/glm.hpp"
 
 
-
-
-struct Sein
-{
-    int a;
-    std::vector<glm::vec3> VõtaPunktid();
-    int VõtaTippudeArv();
-    glm::vec3 VõtaTipuKoordd(int i);
-    void LiigutaTippu(int i, glm::vec3 uusAsuk);
-    bool KasNaabrid(int i1, int i2);
-    void KustutaTipp(int i);
-    void ÜhendaTipud(int i1, int i2);
-};
 
 
 /* Idea: 
@@ -40,24 +29,27 @@ struct Sein
 
 
 
-// Radius of effect. This radius is applied at a position near the 3d point where the mouse is clicked. Verticies inside should be moved.
-float RoE = 50.0f;
-// The distance by which vertices should move.
-float speed = 1.0f;
-// minimum allowable length for an edge. Edge gets collapsed if its length is less.
-float minLen = 5.0f;
-// maximum allowed length for an edge. Edge gets split, new vertex and some new edges get added.
-float maxLen = 20.0f;
+
 
 
 
 void ChangeWall(WallMatrix* wall, glm::vec3 clickPos)
 {
+    // Radius of effect. This radius is applied at a position near the 3d point where the mouse is clicked. Verticies inside should be moved.
+    float RoE = 50.0f;
+    // The distance by which vertices should move.
+    float speed = 0.001f;
+    // minimum allowable length for an edge. Edge gets collapsed if its length is less.
+    float minLen = 5.0f;
+    // maximum allowed length for an edge. Edge gets split, new vertex and some new edges get added.
+    float maxLen = 20.0f;
+
+
     // Looping over every vertex. If vertex is inside the AoE then it gets moved by speed and away from clickPoint.
     for (unsigned int i = 0; i< wall->getVertices().size(); i++)
     {
         glm::vec3 vertPos = wall->getVertices()[i];
-        if (glm::distance(vertPos, clickPos) < RoE);
+        if (glm::distance(vertPos, clickPos) < RoE)
         {
             glm::vec3 direction = glm::normalize(vertPos-clickPos);
             glm::vec3 newVertPos = vertPos+speed*direction;

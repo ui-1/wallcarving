@@ -11,6 +11,7 @@
 #include "floor.h"
 #include "shader_util.h"
 #include "wall.h"
+#include "change_wall.h"
 
 
 #define CONCAT_PATHS(A, B) A "/" B
@@ -128,6 +129,11 @@ int main(int argc, char *argv[]) {
         shader.uniformMatrix4fv("viewMatrix", view);
 
         drawFloor(floorVAO, shader);
+
+
+        glm::vec3 pos = glm::vec3(0.4f, 0.4f, 0.4f);
+        //uncommentida järgmine rida ja ss enam ei kompileeru. Idk why someone please fix
+        //ChangeWall(wm, pos);
         wm->drawWall();
 
     //Crosshair currently not working(renders over 3d objects)

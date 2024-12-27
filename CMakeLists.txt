@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.27.0)
 
 project(Task)
 
@@ -15,6 +15,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_LIST_DIR}/src/floor.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/userInput.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/wall.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/change_wall.cpp
 )
 
 set(HEADER_FILES
@@ -22,31 +23,29 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_LIST_DIR}/include/floor.h
     ${CMAKE_CURRENT_LIST_DIR}/include/userInput.h
     ${CMAKE_CURRENT_LIST_DIR}/include/wall.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/change_wall.h
 )
 
-add_executable(DebugBuild ${SOURCE_FILES} ${HEADER_FILES})
-target_include_directories(DebugBuild PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include)
-target_link_libraries(DebugBuild PRIVATE glfw OpenGL::GL GLEW::GLEW glm::glm-header-only)
+add_executable(Task ${SOURCE_FILES} ${HEADER_FILES})
+target_include_directories(Task PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include)
+target_link_libraries(Task PRIVATE glfw OpenGL::GL GLEW::GLEW glm::glm-header-only)
 
-add_executable(StandaloneRelease ${SOURCE_FILES} ${HEADER_FILES})
-target_include_directories(StandaloneRelease PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include)
-target_link_libraries(StandaloneRelease PRIVATE glfw OpenGL::GL GLEW::GLEW glm::glm-header-only)
-
-set_target_properties(StandaloneRelease PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_LIST_DIR}/bin
+# Additional configurations and properties
+set_target_properties(Task PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/bin
     OUTPUT_NAME "wallcarving"
 )
 
-target_compile_definitions(StandaloneRelease PRIVATE
+target_compile_definitions(Task PRIVATE
     NDEBUG
     _WINDOWS
 )
 
-target_compile_options(StandaloneRelease PRIVATE
+target_compile_options(Task PRIVATE
     $<$<CONFIG:Release>:/O2>
     $<$<CONFIG:Release>:/GL>
 )
 
-set_target_properties(StandaloneRelease PROPERTIES
+set_target_properties(Task PROPERTIES
     LINK_FLAGS_RELEASE "/LTCG /OPT:REF /OPT:ICF"
 )
