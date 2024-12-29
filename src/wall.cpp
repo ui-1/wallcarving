@@ -19,7 +19,7 @@ WallMatrix::WallMatrix(shader_prog& shader): wallShader(shader) {
 
     vertices = std::vector<glm::vec3>();
     stale = false;
-    initializeWall(3, 2);
+    initializeWall(2, 1);
 }
 
 int WallMatrix::addVertex(glm::vec3 vertex) {
@@ -168,6 +168,7 @@ void WallMatrix::debugPrint() {
     std::cout << "\n----------------------------------------------------------\n\n";
 }
 
+// Forms a grid of vertices in rectangular shape with a edges horizontally and b edges vertically.
 void WallMatrix::initializeWall(int a, int b) {
     for (int i_a = 0; i_a <= a; i_a++) {
         for (int i_b = 0; i_b <= b; i_b++) {

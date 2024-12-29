@@ -70,11 +70,11 @@ int main(int argc, char *argv[]) {
     globalWM = wm;
     glfwSetMouseButtonCallback(win, mouse_button_callback);
 
+    /*
     // --------------------------------------------------------------
     //             (see wall.h for available methods)
-
     // example of adding a new vertex
-    int i = wm->addVertex(glm::vec3(1.0f, 0.0f, 0.0f));
+    int i = wm->addVertex(glm::vec3(1.0f, 4.0f, 3.0f));
 
 
     // iterate over existing vertices
@@ -97,7 +97,7 @@ int main(int argc, char *argv[]) {
     wm->debugPrint();
 
     // --------------------------------------------------------------
-
+    */
 
 
     //glEnable(GL_DEPTH_TEST);
@@ -133,7 +133,7 @@ int main(int argc, char *argv[]) {
 
         glm::vec3 pos = glm::vec3(0.4f, 0.4f, 0.4f);
         //uncommentida järgmine rida ja ss enam ei kompileeru. Idk why someone please fix
-        //ChangeWall(wm, pos);
+        ChangeWall(wm, pos);
         wm->drawWall();
 
     //Crosshair currently not working(renders over 3d objects)
@@ -144,7 +144,7 @@ int main(int argc, char *argv[]) {
         
         glfwSwapBuffers(win);
         glfwPollEvents();
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
 

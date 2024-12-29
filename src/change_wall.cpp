@@ -40,9 +40,9 @@ void ChangeWall(WallMatrix* wall, glm::vec3 clickPos)
     // The distance by which vertices should move.
     float speed = 0.001f;
     // minimum allowable length for an edge. Edge gets collapsed if its length is less.
-    float minLen = 5.0f;
-    // maximum allowed length for an edge. Edge gets split, new vertex and some new edges get added.
-    float maxLen = 20.0f;
+    float minLen = 0.0f;
+    // maximum allowed length for an edge. Edge gets split: new vertex and some new edges get added.
+    float maxLen = 2.0f;
 
 
     // Looping over every vertex. If vertex is inside the AoE then it gets moved by speed and away from clickPoint.
@@ -139,8 +139,8 @@ void ChangeWall(WallMatrix* wall, glm::vec3 clickPos)
                 }
                 // 1) done.
 
-                glm::vec3 newVert = v1+(v2-v1)*0.5f;
-                int i3 = wall->addVertex(newVert);
+                glm::vec3 newVertPos = v1+(v2-v1)*0.5f;
+                int i3 = wall->addVertex(newVertPos);
                 // 2) done.
 
                 wall->setEdge(i1, i2, false);
