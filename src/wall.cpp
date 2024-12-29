@@ -118,9 +118,9 @@ void WallMatrix::regenerateVAO() {
     GLfloat* colors = new GLfloat[vertices.size() * 3];
     for (int i = 0; i < vertices.size(); i++) {
         float c = (float) (i+1)/vertices.size();
-        colors[i*3    ] = c;
-        colors[i*3 + 1] = c;
-        colors[i*3 + 2] = c;
+        colors[i*3    ] = c*c;
+        colors[i*3 + 1] = c*c;
+        colors[i*3 + 2] = c*c;
     }
 
     GLuint vertexArrayHandle;

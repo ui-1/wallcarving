@@ -103,6 +103,7 @@ void ChangeWall(WallMatrix* wall, glm::vec3 clickPos)
                 // 3) done.
 
                 wall->removeVertex(i2);
+                i2 -= 1;
                 // 4) done.
 
                 for (unsigned int i : inicesOfNeighbors)
@@ -137,6 +138,7 @@ void ChangeWall(WallMatrix* wall, glm::vec3 clickPos)
                         vertlist.push_back(i);
                     }
                 }
+                printf("vertlist size: %d\n", vertlist.size());
                 // 1) done.
 
                 glm::vec3 newVertPos = v1+(v2-v1)*0.5f;
@@ -148,7 +150,7 @@ void ChangeWall(WallMatrix* wall, glm::vec3 clickPos)
 
                 for (unsigned int i = 0; i<vertlist.size(); i++)
                 {
-                    wall->setEdge(i3, i, true);
+                    wall->setEdge(vertlist[i], i3, true);
                 }
                 // 4) done.
             }

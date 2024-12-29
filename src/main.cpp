@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
         exit (EXIT_FAILURE);
     }
 
-    win = glfwCreateWindow(1920, 1080, "evil gnome hits wall with pickaxe", NULL, NULL);
+    win = glfwCreateWindow(1920/2, 1080/2, "evil gnome hits wall with pickaxe", NULL, NULL);
 
     if (!win) {
         glfwTerminate();
@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
 
     shader.use();
 
-    glm::mat4 projection = glm::perspective(glm::radians(80.0f), 4.0f / 3.0f, 0.1f, 100.f);
+    glm::mat4 projection = glm::perspective(glm::radians(80.0f), 16.0f / 9.0f, 0.1f, 100.f);
 
     shader.uniformMatrix4fv("projectionMatrix", projection);
 
