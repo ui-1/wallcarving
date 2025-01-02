@@ -21,10 +21,6 @@ shader_prog shader(
     ADD_ROOT("shaders/chopper.frag.glsl")
 );
 
-shader_prog crosshairShader(
-    ADD_ROOT("shaders/crosshair.vert.glsl"),
-    ADD_ROOT("shaders/crosshair.frag.glsl")
-);
 
 int main(int argc, char *argv[]) {
     GLFWwindow *win;
@@ -61,11 +57,11 @@ int main(int argc, char *argv[]) {
     shader.use();
 
     glm::mat4 projection = glm::perspective(glm::radians(80.0f), 4.0f / 3.0f, 0.1f, 100.f);
-
     shader.uniformMatrix4fv("projectionMatrix", projection);
 
     GLuint floorVAO = initWalls(shader);
     WallMatrix* wm = new WallMatrix(shader);
+
 
     // --------------------------------------------------------------
     //             (see wall.h for available methods)
@@ -96,9 +92,6 @@ int main(int argc, char *argv[]) {
     // --------------------------------------------------------------
 
 
-
-    //glEnable(GL_DEPTH_TEST);
-    
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -125,20 +118,25 @@ int main(int argc, char *argv[]) {
         glm::mat4 view = glm::lookAt(cameraPos, target, glm::vec3(0.0f, 1.0f, 0.0f));
         shader.uniformMatrix4fv("viewMatrix", view);
 
+        glEnable(GL_DEPTH_TEST);
         drawFloor(floorVAO, shader);
         wm->drawWall();
 
-    //Crosshair currently not working(renders over 3d objects)
-    //uncomment to see tho
-        //glDisable(GL_DEPTH_TEST);
-        //renderCrosshair(crosshairShader, 1920, 1080);
-        //glEnable(GL_DEPTH_TEST);
-        
+    //Now use ortho for hud-----------------
+    glm::mat4 ortho = glm::ortho(0.0f, (float)1920, (float)1080, 0.0f, 0.0f, .0f);
+    shader.use();
+    shader.uniformMatrix4fv("projectionMatrix", ortho);
+    //glDisable(GL_DEPTH_TEST);
+
+    // Draw 2D HUD elements
+    renderCrosshair(shader, 1920, 1080);
+    //glEnable(GL_DEPTH_TEST);
+    //--------------------------------
+
         glfwSwapBuffers(win);
         glfwPollEvents();
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
-
 
     glfwTerminate();
     exit(EXIT_SUCCESS);
