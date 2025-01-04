@@ -11,6 +11,7 @@
 #include "floor.h"
 #include "shader_util.h"
 #include "wall.h"
+#include "change_wall.h"
 
 #define CONCAT_PATHS(A, B) A "/" B
 #define ADD_ROOT(B) CONCAT_PATHS(TASK_ROOT_PATH, B)
@@ -32,7 +33,7 @@ int main(int argc, char *argv[]) {
         exit (EXIT_FAILURE);
     }
 
-    win = glfwCreateWindow(1920, 1080, "evil gnome hits wall with pickaxe", NULL, NULL);
+    win = glfwCreateWindow(1920/2, 1080/2, "evil gnome hits wall with pickaxe", NULL, NULL);
 
     if (!win) {
         glfwTerminate();
@@ -59,18 +60,20 @@ int main(int argc, char *argv[]) {
 
     shader.use();
 
-    glm::mat4 projection = glm::perspective(glm::radians(80.0f), 4.0f / 3.0f, 0.1f, 100.f);
+    glm::mat4 projection = glm::perspective(glm::radians(80.0f), 16.0f / 9.0f, 0.1f, 100.f);
+
     shader.uniformMatrix4fv("projectionMatrix", projection);
 
     GLuint floorVAO = initWalls(shader);
     WallMatrix* wm = new WallMatrix(shader);
+    globalWM = wm;
+    glfwSetMouseButtonCallback(win, mouse_button_callback);
 
-
+    /*
     // --------------------------------------------------------------
     //             (see wall.h for available methods)
-
     // example of adding a new vertex
-    int i = wm->addVertex(glm::vec3(1.0f, 0.0f, 0.0f));
+    int i = wm->addVertex(glm::vec3(1.0f, 4.0f, 3.0f));
 
 
     // iterate over existing vertices
@@ -93,7 +96,7 @@ int main(int argc, char *argv[]) {
     wm->debugPrint();
 
     // --------------------------------------------------------------
-
+    */
 
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
@@ -123,6 +126,11 @@ int main(int argc, char *argv[]) {
 
         glEnable(GL_DEPTH_TEST);
         drawFloor(floorVAO, shader);
+
+
+        glm::vec3 pos = glm::vec3(0.4f, 0.4f, 0.4f);
+        //uncommentida järgmine rida ja ss enam ei kompileeru. Idk why someone please fix
+        ChangeWall(wm, pos);
         wm->drawWall();
 
 
@@ -137,7 +145,7 @@ int main(int argc, char *argv[]) {
 
         glfwSwapBuffers(win);
         glfwPollEvents();
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
     glfwTerminate();

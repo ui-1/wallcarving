@@ -18,26 +18,12 @@ WallMatrix::WallMatrix(shader_prog& shader): wallShader(shader) {
     }
 
     vertices = std::vector<glm::vec3>();
-    
     stale = false;
-
-    // Initial test wall setup
-    addVertex(glm::vec3(-1.0f,  -1.0f, 0.0f));
-    addVertex(glm::vec3( 0.0f,  -1.0f, 0.0f));
-    addVertex(glm::vec3( 0.0f,   1.0f, 0.0f));
-    addVertex(glm::vec3(-1.0f,   1.0f, 0.0f));
-
-    setEdge(0, 1, true);
-    setEdge(1, 2, true);
-    setEdge(2, 3, true);
-    setEdge(3, 0, true);
-    setEdge(0, 2, true);
-    
-    regenerateVAO();
+    initializeWall(2, 1);
 }
 
 int WallMatrix::addVertex(glm::vec3 vertex) {
-    // TODO: vertex limit
+    // TODO: handle vertex limit
     vertices.push_back(vertex);
     stale = true;
     return (int) vertices.size() - 1;
@@ -58,20 +44,13 @@ void WallMatrix::setVertex(glm::vec3 vertex, int i) {
 }
 
 void WallMatrix::setEdge(int i, int j, bool connected) {
-    if (i < j) {
-        edges[i][j] = connected;
-    } else {
-        edges[j][i] = connected;
-    }
+    edges[i][j] = connected;
+    edges[j][i] = connected;
     stale = true;
 }
 
 bool WallMatrix::getEdge(int i, int j) {
-    if (i < j) {
-        return edges[i][j];
-    } else {
-        return edges[j][i];
-    }
+    return edges[i][j];
 }
 
 const std::vector<glm::vec3>& WallMatrix::getVertices() {
@@ -139,9 +118,9 @@ void WallMatrix::regenerateVAO() {
     GLfloat* colors = new GLfloat[vertices.size() * 3];
     for (int i = 0; i < vertices.size(); i++) {
         float c = (float) (i+1)/vertices.size();
-        colors[i*3    ] = c;
-        colors[i*3 + 1] = c;
-        colors[i*3 + 2] = c;
+        colors[i*3    ] = c*c;
+        colors[i*3 + 1] = c*c;
+        colors[i*3 + 2] = c*c;
     }
 
     GLuint vertexArrayHandle;
@@ -187,4 +166,92 @@ void WallMatrix::debugPrint() {
     }
 
     std::cout << "\n----------------------------------------------------------\n\n";
+}
+
+// Forms a grid of vertices in rectangular shape with a edges horizontally and b edges vertically.
+void WallMatrix::initializeWall(int a, int b) {
+    for (int i_a = 0; i_a <= a; i_a++) {
+        for (int i_b = 0; i_b <= b; i_b++) {
+            addVertex(glm::vec3(i_a, i_b, 0.0f));
+        }
+    }
+
+    for (int i_a = 0; i_a <= a; i_a++) {
+        for (int i_b = 0; i_b < b; i_b++) {
+            setEdge(i_a*(b+1) + i_b, i_a*(b+1) + i_b + 1, true);
+        }
+    }
+
+    for (int i_b = 0; i_b <= b; i_b++) {
+        for (int i_a = 0; i_a < a; i_a++) {
+            setEdge(i_a*(b+1) + i_b, (i_a+1)*(b+1) + i_b, true);
+        }
+    }
+
+    for (int i_a = 1; i_a <= a; i_a++) {
+        for (int i_b = 1; i_b <= b; i_b++) {
+            setEdge(i_a*(b+1) + i_b - 1, (i_a-1)*(b+1) + i_b, true);
+        }
+    }
+}
+
+glm::vec3 WallMatrix::getClickedVertex(glm::vec3 rayOrigin, glm::vec3 rayDirection) {
+    // TODO: goes over all triangles until finding a hit; very bad!!
+    std::set<std::tuple<int, int, int>> triSet;
+    for (int i = 0; i < vertices.size(); i++) {
+        for (int j = i + 1; j < vertices.size(); j++) {
+            for (int k = j + 1; k < vertices.size(); k++) {
+                if (getEdge(i, j) && getEdge(j, k) && getEdge(k, i)) {
+                    triSet.insert(std::make_tuple(i, j, k));
+                }
+            }
+        }
+    }
+
+    for (std::tuple<int, int, int> t : triSet) {
+        std::cout << "Current triangle: " << std::get<0>(t) << " " << std::get<1>(t) << " " << std::get<2>(t) << '\n';
+    
+
+        // "Translated" from ray chopper task
+        
+        float epsilon = 0.001f;
+        
+        glm::vec3 e = vertices[std::get<2>(t)] - vertices[std::get<0>(t)];
+        glm::vec3 f = vertices[std::get<1>(t)] - vertices[std::get<0>(t)];
+        
+        glm::vec3 q = glm::cross(e, rayDirection);
+        float D = glm::dot(f, q);
+
+        if (D <= 0 + epsilon) {
+            std::cout << "Missed" << '\n';
+            continue;
+        }
+
+        glm::vec3 B = rayOrigin - vertices[std::get<0>(t)];
+        float v = glm::dot(B, q);
+
+        if (D <= v) {
+            std::cout << "Missed" << '\n';
+            continue;
+        }
+
+        glm::vec3 p = glm::cross(B, f);
+        float u = glm::dot(p, rayDirection);
+
+        if (D <= u+v) {
+            std::cout << "Missed" << '\n';
+            continue;
+        }
+
+        float t = glm::dot(e, p);
+        if (t < 0) {
+            std::cout << "Missed" << '\n';
+            continue;
+        }
+
+        return rayOrigin + rayDirection*(t/D);
+
+    }
+
+    return glm::vec3(999.0f, 999.0f, 999.0f);
 }

@@ -6,7 +6,7 @@
 
 #include "shader_util.h"
 
-#define EM_SIZE 100
+#define EM_SIZE 1000
 
 class WallMatrix {
     public:
@@ -37,6 +37,8 @@ class WallMatrix {
         // Print debug information about the wall
         void debugPrint();
 
+        glm::vec3 getClickedVertex(glm::vec3 rayOrigin, glm::vec3 rayDirection);
+
     private:
         shader_prog& wallShader;
         
@@ -53,4 +55,6 @@ class WallMatrix {
         GLuint& getWallVAO();
         
         void regenerateVAO();
+
+        void initializeWall(int a, int b);
 };
