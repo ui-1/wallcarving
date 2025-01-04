@@ -1,8 +1,6 @@
 #version 400
-
-in vec3 fragColor;  // Color from vertex shader
-out vec4 outColor;  // Final color output
-
+in vec3 fragColor;  
+out vec4 outColor;  
 void main() {
-    outColor = vec4(fragColor, 1.0);  // Set the final fragment color
+    outColor = vec4(fragColor, 1.0);
 }

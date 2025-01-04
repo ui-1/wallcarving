@@ -65,7 +65,6 @@ void mouse_position_callback(GLFWwindow* window, double xpos, double ypos) {
     front = glm::normalize(front); // Normalize to ensure consistent direction
 }
 
-
 //Movement
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (action == GLFW_PRESS) {
@@ -128,38 +127,29 @@ void renderCrosshair(shader_prog crosshairShader, int windowWidth, int windowHei
          0.0f,   0.02f,  1.0f, 0.0f, 0.0f,  // Top vertical line (Red)
          0.0f,  -0.02f,  1.0f, 0.0f, 0.0f   // Bottom vertical line (Red)
     };
-
     // Create buffers for crosshair
     GLuint VBO, VAO;
     glGenBuffers(1, &VBO);
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
-
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(crosshairVertices), crosshairVertices, GL_STATIC_DRAW);
 
-    // Position attribute
+    // Position attribute (location 0 in shader)
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
     glEnableVertexAttribArray(0);
 
-    // Color attribute
+    // Color attribute (location 1 in shader)
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
-
-    // Unbind the VAO and VBO
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
+    
     // Use the crosshair shader program
     crosshairShader.use();
-    //crosshairShader.uniform3f("color", 1.0f, 0.0f, 0.0f); 
 
-    // Draw the crosshair lines
-    glBindVertexArray(VAO);
-    glDrawArrays(GL_LINES, 0, 4);  // Draw 4 vertices (two lines)
-    glBindVertexArray(0);
+    // Draw 4 vertices (two lines)
+    glDrawArrays(GL_LINES, 0, 4);
 
-    // Optionally, clean up (delete buffers)
+    // Clean up (delete buffers)
     glDeleteBuffers(1, &VBO);
     glDeleteVertexArrays(1, &VAO);
 }

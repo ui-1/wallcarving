@@ -13,7 +13,6 @@
 #include "wall.h"
 #include "change_wall.h"
 
-
 #define CONCAT_PATHS(A, B) A "/" B
 #define ADD_ROOT(B) CONCAT_PATHS(TASK_ROOT_PATH, B)
 
@@ -99,9 +98,6 @@ int main(int argc, char *argv[]) {
     // --------------------------------------------------------------
     */
 
-
-    //glEnable(GL_DEPTH_TEST);
-    
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -128,6 +124,7 @@ int main(int argc, char *argv[]) {
         glm::mat4 view = glm::lookAt(cameraPos, target, glm::vec3(0.0f, 1.0f, 0.0f));
         shader.uniformMatrix4fv("viewMatrix", view);
 
+        glEnable(GL_DEPTH_TEST);
         drawFloor(floorVAO, shader);
 
 
@@ -136,17 +133,20 @@ int main(int argc, char *argv[]) {
         ChangeWall(wm, pos);
         wm->drawWall();
 
-    //Crosshair currently not working(renders over 3d objects)
-    //uncomment to see tho
-        //glDisable(GL_DEPTH_TEST);
-        //renderCrosshair(crosshairShader, 1920, 1080);
-        //glEnable(GL_DEPTH_TEST);
-        
+
+        // Render the crosshair in the center of the screen in a different shader
+        renderCrosshair(crosshairShader, 1920, 1080);
+
+        //Switch back to the normal shader 
+        shader.use();
+
+        //Switch back the projectionMatrix 
+        shader.uniformMatrix4fv("projectionMatrix", projection);
+
         glfwSwapBuffers(win);
         glfwPollEvents();
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
-
 
     glfwTerminate();
     exit(EXIT_SUCCESS);
