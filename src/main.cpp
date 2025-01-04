@@ -12,7 +12,6 @@
 #include "shader_util.h"
 #include "wall.h"
 
-
 #define CONCAT_PATHS(A, B) A "/" B
 #define ADD_ROOT(B) CONCAT_PATHS(TASK_ROOT_PATH, B)
 
@@ -21,6 +20,10 @@ shader_prog shader(
     ADD_ROOT("shaders/chopper.frag.glsl")
 );
 
+shader_prog crosshairShader(
+    ADD_ROOT("shaders/crosshair.vert.glsl"),
+    ADD_ROOT("shaders/crosshair.frag.glsl")
+);
 
 int main(int argc, char *argv[]) {
     GLFWwindow *win;
@@ -122,16 +125,15 @@ int main(int argc, char *argv[]) {
         drawFloor(floorVAO, shader);
         wm->drawWall();
 
-    //Now use ortho for hud-----------------
-    glm::mat4 ortho = glm::ortho(0.0f, (float)1920, (float)1080, 0.0f, 0.0f, .0f);
-    shader.use();
-    shader.uniformMatrix4fv("projectionMatrix", ortho);
-    //glDisable(GL_DEPTH_TEST);
 
-    // Draw 2D HUD elements
-    renderCrosshair(shader, 1920, 1080);
-    //glEnable(GL_DEPTH_TEST);
-    //--------------------------------
+        // Render the crosshair in the center of the screen in a different shader
+        renderCrosshair(crosshairShader, 1920, 1080);
+
+        //Switch back to the normal shader 
+        shader.use();
+
+        //Switch back the projectionMatrix 
+        shader.uniformMatrix4fv("projectionMatrix", projection);
 
         glfwSwapBuffers(win);
         glfwPollEvents();

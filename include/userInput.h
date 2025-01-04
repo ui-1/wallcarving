@@ -13,7 +13,7 @@ extern float cameraSpeed;
 
 void mouse_position_callback(GLFWwindow* window, double xpos, double ypos);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-GLuint renderCrosshair(shader_prog shaderProgram, int windowWidth, int windowHeight);
+void renderCrosshair(shader_prog shaderProgram, int windowWidth, int windowHeight);
 
 extern glm::vec3 cameraPos;
 extern glm::vec3 front;
