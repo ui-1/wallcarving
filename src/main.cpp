@@ -97,7 +97,7 @@ int main(int argc, char *argv[]) {
 
     // --------------------------------------------------------------
     */
-
+   
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -130,7 +130,7 @@ int main(int argc, char *argv[]) {
 
         glm::vec3 pos = glm::vec3(0.4f, 0.4f, 0.4f);
         //uncommentida järgmine rida ja ss enam ei kompileeru. Idk why someone please fix
-        ChangeWall(wm, pos);
+        ChangeWall(wm, clickedVertex);
         wm->drawWall();
 
 
