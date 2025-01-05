@@ -38,7 +38,7 @@ void ChangeWall(WallMatrix* wall, glm::vec3 clickPos)
     // Radius of effect. This radius is applied at a position near the 3d point where the mouse is clicked. Verticies inside should be moved.
     float RoE = 50.0f;
     // The distance by which vertices should move.
-    float speed = 0.001f;
+    float speed = 0.01f;
     // minimum allowable length for an edge. Edge gets collapsed if its length is less.
     float minLen = 0.0f;
     // maximum allowed length for an edge. Edge gets split: new vertex and some new edges get added.
