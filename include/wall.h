@@ -1,5 +1,7 @@
 #pragma once
 
+#include <set>
+#include <tuple>
 #include <vector>
 #include <GL/glew.h>
 #include "glm/glm.hpp"
@@ -43,6 +45,8 @@ class WallMatrix {
         shader_prog& wallShader;
         
         std::vector<glm::vec3> vertices;
+
+        std::set<std::tuple<int, int, int>> triSetOrdered;
 
         // Vertices i and j (i < j) are connected iff edges[i][j] == true
         bool edges[EM_SIZE][EM_SIZE];
