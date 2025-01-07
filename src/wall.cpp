@@ -208,6 +208,7 @@ void WallMatrix::initializeWall(int a, int b) {
 }
 
 glm::vec3 WallMatrix::getClickedVertex(glm::vec3 rayOrigin, glm::vec3 rayDirection) {
+    printf("Ray origin: %f, %f, %f\nRay dir: %f,%f, %f,", rayOrigin.x, rayOrigin.y, rayOrigin.z, rayDirection.x, rayDirection.y, rayDirection.z);
     // TODO: goes over all triangles until finding a hit; very bad!!
     std::set<std::tuple<int, int, int>> triSet;
     for (int i = 0; i < vertices.size(); i++) {
@@ -221,12 +222,13 @@ glm::vec3 WallMatrix::getClickedVertex(glm::vec3 rayOrigin, glm::vec3 rayDirecti
     }
 
     for (std::tuple<int, int, int> t : triSet) {
-        std::cout << "Current triangle: " << std::get<0>(t) << " " << std::get<1>(t) << " " << std::get<2>(t) << '\n';
+        //std::cout << "Current triangle: " << std::get<0>(t) << " " << std::get<1>(t) << " " << std::get<2>(t) << '\n';
     
 
         // "Translated" from ray chopper task
         
         float epsilon = 0.001f;
+        
         
         glm::vec3 e = vertices[std::get<2>(t)] - vertices[std::get<0>(t)];
         glm::vec3 f = vertices[std::get<1>(t)] - vertices[std::get<0>(t)];
@@ -235,7 +237,7 @@ glm::vec3 WallMatrix::getClickedVertex(glm::vec3 rayOrigin, glm::vec3 rayDirecti
         float D = glm::dot(f, q);
 
         if (D <= 0 + epsilon) {
-            std::cout << "Missed" << '\n';
+            //std::cout << "Missed" << '\n';
             continue;
         }
 
@@ -243,7 +245,7 @@ glm::vec3 WallMatrix::getClickedVertex(glm::vec3 rayOrigin, glm::vec3 rayDirecti
         float v = glm::dot(B, q);
 
         if (D <= v) {
-            std::cout << "Missed" << '\n';
+            //std::cout << "Missed" << '\n';
             continue;
         }
 
@@ -251,13 +253,13 @@ glm::vec3 WallMatrix::getClickedVertex(glm::vec3 rayOrigin, glm::vec3 rayDirecti
         float u = glm::dot(p, rayDirection);
 
         if (D <= u+v) {
-            std::cout << "Missed" << '\n';
+            //std::cout << "Missed" << '\n';
             continue;
         }
 
         float t = glm::dot(e, p);
         if (t < 0) {
-            std::cout << "Missed" << '\n';
+            //std::cout << "Missed" << '\n';
             continue;
         }
 

@@ -33,12 +33,12 @@
 
 
 
-void ChangeWall(WallMatrix* wall, glm::vec3 clickPos)
+void ChangeWall(WallMatrix* wall, glm::vec3 clickPos, float speed)
 {
     // Radius of effect. This radius is applied at a position near the 3d point where the mouse is clicked. Verticies inside should be moved.
     float RoE = 2.0f;
     // The distance by which vertices should move.
-    float speed = 0.03f;
+    //float speed = 0.03f;
     // minimum allowable length for an edge. Edge gets collapsed if its length is less.
     float minLen = 0.0f;
     // maximum allowed length for an edge. Edge gets split: new vertex and some new edges get added.
@@ -138,7 +138,7 @@ void ChangeWall(WallMatrix* wall, glm::vec3 clickPos)
                         vertlist.push_back(i);
                     }
                 }
-                printf("vertlist size: %d\n", vertlist.size());
+                //printf("vertlist size: %d\n", vertlist.size());
                 // 1) done.
 
                 glm::vec3 newVertPos = v1+(v2-v1)*0.5f;
