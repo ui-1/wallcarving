@@ -36,7 +36,7 @@ extern glm::vec3 cameraPos;
 void ChangeWall(WallMatrix* wall, glm::vec3 clickPos, float speed)
 {
     // Radius of effect. This radius is applied at a position near the 3d point where the mouse is clicked. Verticies inside should be moved.
-    float RoE = 2.0f;
+    float RoE = 1.1f;
     // The distance by which vertices should move.
     //float speed = 0.03f;
     // minimum allowable length for an edge. Edge gets collapsed if its length is less.
