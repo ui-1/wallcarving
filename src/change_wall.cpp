@@ -30,7 +30,7 @@
 
 
 
-
+extern glm::vec3 cameraPos;
 
 
 void ChangeWall(WallMatrix* wall, glm::vec3 clickPos, float speed)
@@ -48,6 +48,8 @@ void ChangeWall(WallMatrix* wall, glm::vec3 clickPos, float speed)
     // Looping over every vertex. If vertex is inside the AoE then it gets moved by speed and away from clickPoint.
     for (unsigned int i = 0; i< wall->getVertices().size(); i++)
     {
+
+        
         glm::vec3 vertPos = wall->getVertices()[i];
         if (glm::distance(vertPos, clickPos) < RoE)
         {
@@ -113,10 +115,25 @@ void ChangeWall(WallMatrix* wall, glm::vec3 clickPos, float speed)
                 // 5) done.
                 continue;
             }
+        }
+    }
 
 
-            
-            
+    for (unsigned int i1 = 0; i1< wall->getVertices().size(); i1++)
+    {
+        for (unsigned int i2 = 0; i2 < i1; i2++)
+        {
+            if (!wall->getEdge(i1, i2))
+            {
+                continue;
+            }
+
+            // if code reaches here then the vertices i1 and i2 have a connecting edge. Find the length of it.
+            glm::vec3 v1 = wall->getVertices()[i1];
+            glm::vec3 v2 = wall->getVertices()[i2];
+            float edgeLen = glm::distance(v1, v2);
+
+
             // TODO: split too long edges in the order of their lengths. The longest too long edges first and shorter too long edges last. Doing it in this order might move vertices around so that some of the too long edges get shorter and therefore would not need to be split. This might result in less triangles and more pleasing geometry.
             if (edgeLen > maxLen)
             {
