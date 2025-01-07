@@ -101,6 +101,7 @@ int main(int argc, char *argv[]) {
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glm::vec3 pos = glm::vec3(2.5f, 2.5f, 1.0f);
 
     while (!glfwWindowShouldClose(win)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -128,8 +129,9 @@ int main(int argc, char *argv[]) {
         drawFloor(floorVAO, shader);
 
 
-        glm::vec3 pos = glm::vec3(0.4f, 0.4f, 0.4f);
-        //uncommentida järgmine rida ja ss enam ei kompileeru. Idk why someone please fix
+        
+        pos.z -= 0.01f;
+        //printf("(%f, %f, %f)", pos.x, pos.y, pos.z);
         ChangeWall(wm, pos);
         wm->drawWall();
 

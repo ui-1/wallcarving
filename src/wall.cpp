@@ -19,7 +19,7 @@ WallMatrix::WallMatrix(shader_prog& shader): wallShader(shader) {
 
     vertices = std::vector<glm::vec3>();
     stale = false;
-    initializeWall(2, 1);
+    initializeWall(5, 5);
 }
 
 int WallMatrix::addVertex(glm::vec3 vertex) {
