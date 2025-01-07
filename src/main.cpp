@@ -97,7 +97,7 @@ int main(int argc, char *argv[]) {
 
     // --------------------------------------------------------------
     */
-
+   
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -129,7 +129,7 @@ int main(int argc, char *argv[]) {
         drawFloor(floorVAO, shader);
 
 
-        
+
         pos.z -= 0.01f;
         //printf("(%f, %f, %f)", pos.x, pos.y, pos.z);
         if (counter < 100)

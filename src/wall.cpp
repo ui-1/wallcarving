@@ -73,7 +73,8 @@ GLuint& WallMatrix::getWallVAO() {
 }
 
 void WallMatrix::regenerateVAO() {
-    GLfloat* verticesArray = new GLfloat[vertices.size() * 3];
+
+    GLfloat* verticesArray = new GLfloat[vertices.size() * 6];
     for (int i = 0; i < vertices.size(); i++) {
         verticesArray[i*3    ] = vertices[i].x;
         verticesArray[i*3 + 1] = vertices[i].y;
@@ -113,7 +114,8 @@ void WallMatrix::regenerateVAO() {
         }
     }
 
-    GLubyte* indicesArray = new GLubyte[triSetOrdered.size() * 3];
+
+    GLubyte* indicesArray = new GLubyte[triSetOrdered.size() * 6];
     int index = 0;
     for (std::tuple<int, int, int> e : triSetOrdered) {
         indicesArray[index++] = std::get<0>(e);
@@ -123,7 +125,8 @@ void WallMatrix::regenerateVAO() {
 
     // TODO: assign colors based on depth or sth?
     //       current values are just placeholders
-    GLfloat* colors = new GLfloat[vertices.size() * 3];
+
+    GLfloat* colors = new GLfloat[vertices.size() * 6];
     for (int i = 0; i < vertices.size(); i++) {
         float c = (float) (i+1)/vertices.size();
         colors[i*3    ] = c*c;
@@ -135,13 +138,15 @@ void WallMatrix::regenerateVAO() {
     glGenVertexArrays(1, &vertexArrayHandle);
     glBindVertexArray(vertexArrayHandle);
 
-    wallShader.attribute3fv("position", verticesArray, (int) vertices.size() * 3);
-    wallShader.attribute3fv("color", colors, (int) vertices.size() * 3);
+
+    wallShader.attribute3fv("position", verticesArray, (int) vertices.size() * 6);
+    wallShader.attribute3fv("color", colors, (int) vertices.size() * 6);
 
     GLuint vboHandle;
     glGenBuffers(1, &vboHandle);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboHandle);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte) * triSetOrdered.size() * 3, indicesArray, GL_STATIC_DRAW);
+
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte) * triSetOrdered.size() * 6, indicesArray, GL_STATIC_DRAW);
 
     wallVAO = vertexArrayHandle;
     stale = false;
@@ -154,7 +159,7 @@ void WallMatrix::regenerateVAO() {
 void WallMatrix::drawWall() {
     wallShader.uniformMatrix4fv("modelMatrix", glm::mat4(1.0));
     glBindVertexArray(getWallVAO());
-    glDrawElements(GL_TRIANGLES, (int) triSetOrdered.size() * 3, GL_UNSIGNED_BYTE, 0);
+    glDrawElements(GL_TRIANGLES, (int) triSetOrdered.size() * 6, GL_UNSIGNED_BYTE, 0);
 }
 
 void WallMatrix::debugPrint() {
@@ -221,49 +226,58 @@ glm::vec3 WallMatrix::getClickedVertex(glm::vec3 rayOrigin, glm::vec3 rayDirecti
         }
     }
 
+    float closestT = FLT_MAX;
     for (std::tuple<int, int, int> t : triSet) {
         //std::cout << "Current triangle: " << std::get<0>(t) << " " << std::get<1>(t) << " " << std::get<2>(t) << '\n';
     
 
         // "Translated" from ray chopper task
+        // Möller-Trumbore algrorithm
+        float epsilon = 0.0001f;
         
-        float epsilon = 0.001f;
-        
-        
-        glm::vec3 e = vertices[std::get<2>(t)] - vertices[std::get<0>(t)];
         glm::vec3 f = vertices[std::get<1>(t)] - vertices[std::get<0>(t)];
+        glm::vec3 e = vertices[std::get<2>(t)] - vertices[std::get<0>(t)];
         
-        glm::vec3 q = glm::cross(e, rayDirection);
+        glm::vec3 q = glm::cross(rayDirection,e);
         float D = glm::dot(f, q);
 
-        if (D <= 0 + epsilon) {
-            //std::cout << "Missed" << '\n';
+
+        if (D < epsilon && D > -epsilon) {      //Ray is almost parallel to  triangle
+            std::cout << "Missed" << '\n';
             continue;
         }
 
+        float x = 1.0f/D;
         glm::vec3 B = rayOrigin - vertices[std::get<0>(t)];
-        float v = glm::dot(B, q);
+        float v = x * glm::dot(B, q);
 
-        if (D <= v) {
-            //std::cout << "Missed" << '\n';
+
+        if (v < 0.0f || v > 1.0f) {             //outside the triangle
+            std::cout << "Missed" << '\n';
             continue;
         }
 
         glm::vec3 p = glm::cross(B, f);
-        float u = glm::dot(p, rayDirection);
+        float u = x * glm::dot(rayDirection, p);
 
-        if (D <= u+v) {
-            //std::cout << "Missed" << '\n';
+
+        if (u < 0.0f || u+v > 1.0f) {          //outside the triangle
+            std::cout << "Missed" << '\n';
             continue;
         }
 
-        float t = glm::dot(e, p);
-        if (t < 0) {
-            //std::cout << "Missed" << '\n';
+        float t = x*glm::dot(e, p);
+        if (t < epsilon) {                      //behind the ray origin
+            std::cout << "Missed" << '\n';
             continue;
         }
 
-        return rayOrigin + rayDirection*(t/D);
+        if (t < FLT_MAX)        //check that t is not extremely large
+        {
+            closestT = t;
+            return rayOrigin + rayDirection*t;
+        }
+        
 
     }
 

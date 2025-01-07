@@ -20,5 +20,6 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
 extern glm::vec3 cameraPos;
 extern glm::vec3 front;
+extern glm::vec3 clickedVertex;
 
 #endif

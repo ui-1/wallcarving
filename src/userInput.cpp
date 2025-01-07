@@ -12,6 +12,7 @@
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f); // Initial camera position
 glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f); // Initial front direction
 WallMatrix* globalWM = nullptr;
+glm::vec3 clickedVertex = glm::vec3(0.4f, 0.4f, 0.4f);
 
 // Movement variables
 bool moveForward = false;
