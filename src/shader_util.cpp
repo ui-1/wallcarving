@@ -69,6 +69,14 @@ shader_prog::shader_prog(const char* vertex_shader_filename, const char* fragmen
     f_filename = fragment_shader_filename;
 }
 
+shader_prog::shader_prog(std::string vertex_shader_str, std::string fragment_shader_str)
+{
+    v_source =vertex_shader_str;
+    f_source = fragment_shader_str;
+    v_filename = "";
+    f_filename = "";
+}
+
 void shader_prog::use() {
     vertex_shader = compile(GL_VERTEX_SHADER, v_source);
     fragment_shader = compile(GL_FRAGMENT_SHADER, f_source);

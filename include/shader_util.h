@@ -20,6 +20,7 @@ private:
     std::string v_filename, f_filename;
 public:
     shader_prog(const char* vertex_shader_filename, const char* fragment_shader_filename);
+    shader_prog(std::string vertex_shader_str, std::string fragment_shader_str);
     void use();
     void free();
     operator GLuint();

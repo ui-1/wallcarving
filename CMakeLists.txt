@@ -38,12 +38,3 @@ set_target_properties(Task PROPERTIES
     OUTPUT_NAME "wallcarving"
 )
 set(CMAKE_BUILD_TYPE Release)
-
-target_compile_definitions(Task PRIVATE
-    NDEBUG
-    _WINDOWS
-)
-
-set_target_properties(Task PROPERTIES
-    LINK_FLAGS_RELEASE "/LTCG /OPT:REF /OPT:ICF"
-)

@@ -17,15 +17,14 @@
 #define ADD_ROOT(B) CONCAT_PATHS(TASK_ROOT_PATH, B)
 
 shader_prog shader(
-    ADD_ROOT("shaders/chopper.vert.glsl"),
-    ADD_ROOT("shaders/chopper.frag.glsl")
+    std::string("#version 400\nuniform mat4 projectionMatrix;uniform mat4 viewMatrix;uniform mat4 modelMatrix;in vec3 position;in vec3 color;out vec3 interpolatedColor;void main(void) {interpolatedColor = color;gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);}"),
+    std::string("#version 400\nin vec3 interpolatedColor;\nout vec4 fragColor;\nvoid main(void) {\nfragColor = vec4(interpolatedColor, 1.0);\n}")
 );
 
 shader_prog crosshairShader(
-    ADD_ROOT("shaders/crosshair.vert.glsl"),
-    ADD_ROOT("shaders/crosshair.frag.glsl")
+    std::string("#version 400\nlayout(location = 0) in vec2 position;layout(location = 1) in vec3 color;out vec3 fragColor;void main() {fragColor = color;gl_Position = vec4(position, 0.0, 1.0); }"),
+    std::string("#version 400\nin vec3 fragColor;out vec4 outColor;void main() {outColor = vec4(fragColor, 1.0);}")
 );
-
 int main(int argc, char *argv[]) {
         printf ("exiting main");
         std::this_thread::sleep_for(std::chrono::milliseconds(2000));
