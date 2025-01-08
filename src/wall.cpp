@@ -74,7 +74,7 @@ GLuint& WallMatrix::getWallVAO() {
 
 void WallMatrix::regenerateVAO() {
 
-    GLfloat* verticesArray = new GLfloat[vertices.size() * 6];
+    GLfloat* verticesArray = new GLfloat[vertices.size() * 3];
     for (int i = 0; i < vertices.size(); i++) {
         verticesArray[i*3    ] = vertices[i].x;
         verticesArray[i*3 + 1] = vertices[i].y;
@@ -115,7 +115,7 @@ void WallMatrix::regenerateVAO() {
     }
 
 
-    GLubyte* indicesArray = new GLubyte[triSetOrdered.size() * 6];
+    GLubyte* indicesArray = new GLubyte[triSetOrdered.size() * 3];
     int index = 0;
     for (std::tuple<int, int, int> e : triSetOrdered) {
         indicesArray[index++] = std::get<0>(e);
@@ -126,7 +126,7 @@ void WallMatrix::regenerateVAO() {
     // TODO: assign colors based on depth or sth?
     //       current values are just placeholders
 
-    GLfloat* colors = new GLfloat[vertices.size() * 6];
+    GLfloat* colors = new GLfloat[vertices.size() * 3];
     for (int i = 0; i < vertices.size(); i++) {
         float c = (float) (i+1)/vertices.size();
         colors[i*3    ] = c*c;
@@ -139,14 +139,14 @@ void WallMatrix::regenerateVAO() {
     glBindVertexArray(vertexArrayHandle);
 
 
-    wallShader.attribute3fv("position", verticesArray, (int) vertices.size() * 6);
-    wallShader.attribute3fv("color", colors, (int) vertices.size() * 6);
+    wallShader.attribute3fv("position", verticesArray, (int) vertices.size() * 3);
+    wallShader.attribute3fv("color", colors, (int) vertices.size() * 3);
 
     GLuint vboHandle;
     glGenBuffers(1, &vboHandle);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboHandle);
 
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte) * triSetOrdered.size() * 6, indicesArray, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte) * triSetOrdered.size() * 3, indicesArray, GL_STATIC_DRAW);
 
     wallVAO = vertexArrayHandle;
     stale = false;
@@ -159,7 +159,7 @@ void WallMatrix::regenerateVAO() {
 void WallMatrix::drawWall() {
     wallShader.uniformMatrix4fv("modelMatrix", glm::mat4(1.0));
     glBindVertexArray(getWallVAO());
-    glDrawElements(GL_TRIANGLES, (int) triSetOrdered.size() * 6, GL_UNSIGNED_BYTE, 0);
+    glDrawElements(GL_TRIANGLES, (int) triSetOrdered.size() * 3, GL_UNSIGNED_BYTE, 0);
 }
 
 void WallMatrix::debugPrint() {

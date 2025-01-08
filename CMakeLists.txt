@@ -9,6 +9,8 @@ find_package(glm CONFIG REQUIRED)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DTASK_ROOT_PATH=\\\"\"${CMAKE_CURRENT_LIST_DIR}\\\"\"")
 
+set(CMAKE_CXX_FLAGS_RELEASE "/Od /MT")
+
 set(SOURCE_FILES
     ${CMAKE_CURRENT_LIST_DIR}/src/main.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/shader_util.cpp
@@ -35,15 +37,11 @@ set_target_properties(Task PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/bin
     OUTPUT_NAME "wallcarving"
 )
+set(CMAKE_BUILD_TYPE Release)
 
 target_compile_definitions(Task PRIVATE
     NDEBUG
     _WINDOWS
-)
-
-target_compile_options(Task PRIVATE
-    $<$<CONFIG:Release>:/O2>
-    $<$<CONFIG:Release>:/GL>
 )
 
 set_target_properties(Task PROPERTIES

@@ -27,15 +27,24 @@ shader_prog crosshairShader(
 );
 
 int main(int argc, char *argv[]) {
+        printf ("exiting main");
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+
     GLFWwindow *win;
 
     if (!glfwInit()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+
+        printf ("exiting !!!!!!!!");
         exit (EXIT_FAILURE);
     }
 
     win = glfwCreateWindow(1920/2, 1080/2, "evil gnome hits wall with pickaxe", NULL, NULL);
 
     if (!win) {
+        printf ("exiting ??????????????!!!!!!!!2");
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
@@ -126,6 +135,7 @@ int main(int argc, char *argv[]) {
         shader.uniformMatrix4fv("viewMatrix", view);
 
         glEnable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
         drawFloor(floorVAO, shader);
 
 
@@ -153,7 +163,8 @@ int main(int argc, char *argv[]) {
         glfwPollEvents();
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
-
+        printf ("exiting 3");
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
     glfwTerminate();
     exit(EXIT_SUCCESS);
 
